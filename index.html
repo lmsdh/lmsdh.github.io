@@ -4,26 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Learning Management System</title>
+<meta name="theme-color" content="#0f172a">
+<!-- buka koneksi ke server Google lebih awal supaya LMS lebih cepat tampil -->
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<link rel="dns-prefetch" href="https://ssl.gstatic.com">
 <style>
-  html,body{margin:0;height:100%;background:#fff;font-family:system-ui,sans-serif}
-  iframe{position:fixed;inset:0;width:100%;height:100%;border:0}
-  #fallback{position:fixed;right:12px;bottom:12px;z-index:2;background:#1f2937;color:#fff;
-    padding:8px 12px;border-radius:8px;font-size:13px;text-decoration:none;opacity:.85}
-  #fallback:hover{opacity:1}
+  html,body{margin:0;height:100%;background:#0f172a;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .5s ease}
+  iframe.on{opacity:1}
+  #splash{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;color:#e2e8f0;background:#0f172a;transition:opacity .5s ease,visibility .5s}
+  #splash.off{opacity:0;visibility:hidden}
+  .ring{width:46px;height:46px;border-radius:50%;border:3px solid rgba(226,232,240,.15);border-top-color:#38bdf8;animation:spin .8s linear infinite}
+  .t1{font-size:17px;font-weight:600;letter-spacing:.2px}
+  .t2{font-size:13px;color:#94a3b8;margin-top:-10px}
+  #slow{font-size:12px;color:#94a3b8;display:none}
+  #slow a{color:#38bdf8}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<!-- ============================================================
-     GANTI link di bawah ini dengan link /exec deployment LMS Anda
-     (Apps Script > Deploy > Manage deployments > Web app URL)
-     ============================================================ -->
+<!-- Link /exec deployment LMS (Apps Script > Deploy > Manage deployments > Web app URL) -->
 <script>var LMS_URL = 'https://script.google.com/macros/s/AKfycbxJ3rup3yH2uEJ0lsR6-DpnxesaSwEWsCXHCiVPXt0NV0FzATkwIcUo6_JfGBGA8kexRw/exec';</script>
 
+<div id="splash">
+  <div class="ring"></div>
+  <div class="t1">Learning Management System</div>
+  <div class="t2">Memuat aplikasi…</div>
+  <div id="slow">Masih memuat. <a id="direct" target="_top" rel="noopener">Buka langsung</a></div>
+</div>
 <iframe id="app" title="LMS" allow="clipboard-write; fullscreen" allowfullscreen></iframe>
-<a id="fallback" target="_top" rel="noopener">Tidak muncul? Buka langsung</a>
+
 <script>
-  document.getElementById('app').src = LMS_URL;
-  document.getElementById('fallback').href = LMS_URL;
+  var app = document.getElementById('app'), splash = document.getElementById('splash');
+  document.getElementById('direct').href = LMS_URL;
+  function ready(){
+    /* beri jeda singkat agar isi LMS sempat tergambar, lalu fade-in */
+    setTimeout(function(){ app.classList.add('on'); splash.classList.add('off'); }, 600);
+  }
+  app.addEventListener('load', ready, { once: true });
+  app.src = LMS_URL;
+  /* tautan cadangan hanya muncul kalau setelah 20 detik LMS belum juga tampil */
+  setTimeout(function(){ if (!app.classList.contains('on')) document.getElementById('slow').style.display = 'block'; }, 20000);
 </script>
 </body>
 </html>
